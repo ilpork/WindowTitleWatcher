@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace WindowTitleWatcher
@@ -42,10 +43,20 @@ namespace WindowTitleWatcher
 
         void Exit(object sender, EventArgs e)
         {            
+            _notifyIcon.Click -= NotifyIcon_Click;
+            _notifyIcon.DoubleClick -= NotifyIcon_Click;
             _notifyIcon.Visible = false;
             _windowWatcher.TextFound -= WindowWatcher_TextFound;
             Application.Exit();
-        }        
+        }
+
+
+        void NotifyIcon_Click(object sender, EventArgs e)
+        {
+            var mi = typeof(NotifyIcon).GetMethod("ShowContextMenu",
+                        BindingFlags.Instance | BindingFlags.NonPublic);
+            mi.Invoke(_notifyIcon, null);
+        }
 
         void ShowConfigurationWindow(object sender, EventArgs e)
         {   
@@ -82,11 +93,14 @@ namespace WindowTitleWatcher
             {
                 _notifyIcon = new NotifyIcon();
                 _notifyIcon.Icon = Properties.Resources.app;
-                _notifyIcon.Visible = true;
+                _notifyIcon.DoubleClick += NotifyIcon_Click;
+                _notifyIcon.Click += NotifyIcon_Click;
+                _notifyIcon.Visible = true;                
             }
 
             _notifyIcon.ContextMenu = new ContextMenu(new MenuItem[]
-                    { _configMenuItem, _startMenuItem, _stopMenuItem, _separatorMenuItem, _exitMenuItem });            
+                    { _configMenuItem, _startMenuItem, _stopMenuItem, _separatorMenuItem, _exitMenuItem });
+            
             if (_windowWatcher.IsRunning)
             {
                 _notifyIcon.Text = $"{_appName}\nWatching for (\"{_windowWatcher.WatchText}\")";
@@ -99,7 +113,7 @@ namespace WindowTitleWatcher
                 _startMenuItem.Enabled = !string.IsNullOrEmpty(_windowWatcher.WatchText);
                 _stopMenuItem.Enabled = false;
             }    
-        }
+        }        
 
         void WindowWatcher_TextFound(object sender, EventArgs e)
         {
