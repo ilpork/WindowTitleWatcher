@@ -10,6 +10,7 @@ namespace WindowTitleWatcher
         readonly WindowWatcher _windowWatcher;
         readonly string _appName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;        
         NotifyIcon _notifyIcon;
+        MenuItem _aboutMenuItem;
         MenuItem _configMenuItem;
         MenuItem _startMenuItem;
         MenuItem _stopMenuItem;
@@ -22,6 +23,7 @@ namespace WindowTitleWatcher
             _windowWatcher = new WindowWatcher() { WatchText = initialText };
             _windowWatcher.TextFound += WindowWatcher_TextFound;
 
+            _aboutMenuItem = new MenuItem("&About", new EventHandler(ShowAboutWindow));
             _configMenuItem = new MenuItem("&Configure", new EventHandler(ShowConfigurationWindow));            
             _startMenuItem = new MenuItem("&Start", new EventHandler(Start));
             _stopMenuItem = new MenuItem("S&top", new EventHandler(Stop));            
@@ -56,6 +58,12 @@ namespace WindowTitleWatcher
             var mi = typeof(NotifyIcon).GetMethod("ShowContextMenu",
                         BindingFlags.Instance | BindingFlags.NonPublic);
             mi.Invoke(_notifyIcon, null);
+        }
+
+        void ShowAboutWindow(object sender, EventArgs e)
+        {
+            var aboutWindow = new AboutWindow();
+            aboutWindow.ShowDialog();
         }
 
         void ShowConfigurationWindow(object sender, EventArgs e)
@@ -99,7 +107,7 @@ namespace WindowTitleWatcher
             }
 
             _notifyIcon.ContextMenu = new ContextMenu(new MenuItem[]
-                    { _configMenuItem, _startMenuItem, _stopMenuItem, _separatorMenuItem, _exitMenuItem });
+                    { _aboutMenuItem, _configMenuItem, _startMenuItem, _stopMenuItem, _separatorMenuItem, _exitMenuItem });
             
             if (_windowWatcher.IsRunning)
             {
