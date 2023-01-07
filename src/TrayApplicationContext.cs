@@ -21,10 +21,10 @@ namespace WindowTitleWatcher
             _windowWatcher = new WindowWatcher() { WatchText = initialText };
             _windowWatcher.TextFound += WindowWatcher_TextFound;
 
-            _configMenuItem = new MenuItem("Configure", new EventHandler(ShowConfigurationWindow));
-            _startMenuItem = new MenuItem("Start", new EventHandler(Start));
-            _stopMenuItem = new MenuItem("Stop", new EventHandler(Stop));            
-            _exitMenuItem = new MenuItem("Exit", new EventHandler(Exit));
+            _configMenuItem = new MenuItem("&Configure", new EventHandler(ShowConfigurationWindow));            
+            _startMenuItem = new MenuItem("&Start", new EventHandler(Start));
+            _stopMenuItem = new MenuItem("S&top", new EventHandler(Stop));            
+            _exitMenuItem = new MenuItem("&Exit", new EventHandler(Exit));
             _separatorMenuItem = new MenuItem("-");
 
             if (string.IsNullOrEmpty(initialText))
@@ -76,7 +76,7 @@ namespace WindowTitleWatcher
         void UpdateMenuItems()
         {
             _startMenuItem.Text = string.IsNullOrEmpty(_windowWatcher.WatchText) ? 
-                "Start (no text configured)" : $"Start (\"{_windowWatcher.WatchText}\")";             
+                "&Start (no text configured)" : $"&Start (\"{_windowWatcher.WatchText}\")";             
 
             if (_notifyIcon == null)
             {
